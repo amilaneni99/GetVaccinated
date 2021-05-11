@@ -133,8 +133,8 @@ public class VaccinationServiceImpl implements VaccinationService {
 
     @Override
     public void sendMessage(String body, String phone) {
-        String ACCOUNT_SID = "ACd84fc11f53b91be814e8c14fb8e01066";
-        String AUTH_TOKEN = "874824146e55ff6d2ce4568818c736c1";
+        String ACCOUNT_SID = "****";
+        String AUTH_TOKEN = "***";
         Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
         Message message = Message.creator(
                 new com.twilio.type.PhoneNumber("+91"+phone),
