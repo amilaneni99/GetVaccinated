@@ -69,7 +69,7 @@ public class VaccinationServiceImpl implements VaccinationService {
     @Scheduled(cron = "*/5 * * * *")
     void dummyAPICall() {
         RestTemplate restTemplate = new RestTemplate();
-        restTemplate.getForObject("http://localhost:8080/hello",String.class);
+        restTemplate.getForObject("https://fathomless-scrubland-09643.herokuapp.com/hello",String.class);
     }
 
 
