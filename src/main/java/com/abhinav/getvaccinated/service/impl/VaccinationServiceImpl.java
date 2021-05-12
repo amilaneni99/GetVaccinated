@@ -92,9 +92,9 @@ public class VaccinationServiceImpl implements VaccinationService {
                 ObjectMapper objectMapper = new ObjectMapper();
                 Centres centres = objectMapper.readValue(response.getBody(),Centres.class);
                 int age = Integer.parseInt(map.get("age")+"");
-                if(centres.getCenters().stream().filter(this.getAgeLimitPredicate(age).and(this.getAvailabiltityPredicate(5))).count() != 0) {
+                if(centres.getCenters().stream().anyMatch(this.getAgeLimitPredicate(age))) {
 //                    List<String> centresList = new ArrayList<>();
-//                    centres.getCenters().stream().filter(this.getAgeLimitPredicate(age).and(this.getAvailabiltityPredicate(5))).forEach(center -> centresList.add(center.getName()));
+//                    centres.getCenters().stream().filter(this.getAgeLimitPredicate(age)).forEach(center -> centresList.add(center.getName()));
 //                    System.out.println(String.join(",",centresList));
                     dates.add(dateString);
                     db.collection("watchlist").document(map.get("id").toString()).delete();
@@ -103,7 +103,9 @@ public class VaccinationServiceImpl implements VaccinationService {
             if (dates.size() > 0) {
                 finalMessage.append("Vaccines for "+map.get("age")+" available on: "+String.join(",",dates));
             }
-            if(!finalMessage.toString().equals("")) { this.sendMessage(finalMessage.toString(),map.get("phone").toString()); }
+            if(!finalMessage.toString().equals("")) {
+                this.sendMessage(finalMessage.toString(),map.get("phone").toString());
+            }
         }
     }
 
@@ -125,7 +127,7 @@ public class VaccinationServiceImpl implements VaccinationService {
 
 
     Predicate<Center> getAgeLimitPredicate(int age) {
-        Predicate<Center> predicate = center -> center.getSessions().stream().anyMatch(session -> session.getMin_age_limit() == age);
+        Predicate<Center> predicate = center -> center.getSessions().stream().anyMatch(session -> (session.getMin_age_limit() <= age && session.getAvailable_capacity() >= 5));
         return predicate;
     }
 
