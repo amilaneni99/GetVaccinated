@@ -3,6 +3,8 @@ package com.abhinav.getvaccinated.controller;
 import com.abhinav.getvaccinated.service.VaccinationService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import net.minidev.json.parser.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
@@ -15,14 +17,17 @@ public class VaccinationResource {
 
     private RestTemplate restTemplate;
     private VaccinationService vaccinationService;
+    Logger logger;
 
     public VaccinationResource(VaccinationService vaccinationService) throws IOException {
         this.restTemplate = new RestTemplate();
         this.vaccinationService = vaccinationService;
+        logger = LoggerFactory.getLogger(VaccinationResource.class);
     }
 
     @GetMapping(value = "/hello", produces = MediaType.APPLICATION_JSON_VALUE)
     public String greet() throws ExecutionException, InterruptedException {
+        logger.info("API Service Awake");
         return "Hello";
     }
 

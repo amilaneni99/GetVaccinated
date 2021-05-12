@@ -25,7 +25,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDate;
@@ -65,8 +64,7 @@ public class VaccinationServiceImpl implements VaccinationService {
     }
 
 
-    @PostConstruct
-    @Scheduled(cron = "*/5 * * * *")
+    @Scheduled(cron = "0 */5 * * * *")
     void dummyAPICall() {
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.getForObject("https://fathomless-scrubland-09643.herokuapp.com/hello",String.class);
