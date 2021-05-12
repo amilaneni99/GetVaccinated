@@ -7,6 +7,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.core.ApiFuture;
 import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.QuerySnapshot;
@@ -24,6 +25,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDate;
@@ -63,7 +65,12 @@ public class VaccinationServiceImpl implements VaccinationService {
     }
 
 
-
+    @PostConstruct
+    @Scheduled(cron = "*/5 * * * *")
+    void dummyAPICall() {
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.getForObject("http://localhost:8080/hello",String.class);
+    }
 
 
     @Override
@@ -97,8 +104,6 @@ public class VaccinationServiceImpl implements VaccinationService {
             }
             if (dates.size() > 0) {
                 finalMessage.append("Vaccines for "+map.get("age")+" available on: "+String.join(",",dates));
-            } else {
-
             }
             if(!finalMessage.toString().equals("")) { this.sendMessage(finalMessage.toString(),map.get("phone").toString()); }
         }
@@ -132,10 +137,9 @@ public class VaccinationServiceImpl implements VaccinationService {
     }
 
     @Override
-    public void sendMessage(String body, String phone) {
-        String ACCOUNT_SID = "****";
-        String AUTH_TOKEN = "***";
-        Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
+    public void sendMessage(String body, String phone) throws ExecutionException, InterruptedException {
+        String[] creds = this.getTwilioCreds();
+        Twilio.init(creds[0], creds[1]);
         Message message = Message.creator(
                 new com.twilio.type.PhoneNumber("+91"+phone),
                 new com.twilio.type.PhoneNumber("+18304200819"),
@@ -154,5 +158,13 @@ public class VaccinationServiceImpl implements VaccinationService {
         data.put("phone", phone);
 
         db.collection("watchlist").add(data);
+    }
+
+    @Override
+    public String[] getTwilioCreds() throws ExecutionException, InterruptedException {
+        DocumentSnapshot documentSnapshot = db.collection("twilio-creds").document("bRZXlO0Qx3Po461FiNdo").get().get();
+        String ACCOUNT_SID = documentSnapshot.getString("accountSID");
+        String AUTH_TOKEN = documentSnapshot.getString("authToken");
+        return new String[]{ACCOUNT_SID,AUTH_TOKEN};
     }
 }

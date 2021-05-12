@@ -14,7 +14,9 @@ public interface VaccinationService {
     @Scheduled(fixedRate = 2000)
     void getAvailableVaccinationCentresScheduled() throws JsonProcessingException, ExecutionException, InterruptedException;
 
-    void sendMessage(String body, String phone);
+    void sendMessage(String body, String phone) throws ExecutionException, InterruptedException;
 
     void addToWatchList(int districtCode, int age, String phone);
+
+    String[] getTwilioCreds() throws ExecutionException, InterruptedException;
 }

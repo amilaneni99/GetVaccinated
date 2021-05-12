@@ -7,19 +7,22 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
+import java.util.concurrent.ExecutionException;
+
 @RestController
 public class VaccinationResource {
 
     private RestTemplate restTemplate;
     private VaccinationService vaccinationService;
 
-    public VaccinationResource(VaccinationService vaccinationService) {
+    public VaccinationResource(VaccinationService vaccinationService) throws IOException {
         this.restTemplate = new RestTemplate();
         this.vaccinationService = vaccinationService;
     }
 
     @GetMapping(value = "/hello", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String greet() {
+    public String greet() throws ExecutionException, InterruptedException {
         return "Hello";
     }
 
